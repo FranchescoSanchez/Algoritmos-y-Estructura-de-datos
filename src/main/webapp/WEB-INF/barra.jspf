@@ -24,7 +24,7 @@
         <% if (usuarioBarra != null) { %>
             <a href="<%= ctx %>/dashboard.jsp">Subir tareas</a>
             <span class="chip-usuario">
-                <span class="avatar"><%= inicialBarra %></span>
+                <img src="<%= ctx %>/img/perfil.jpg" alt="" class="avatar avatar-foto">
                 <span class="nombre"><%= usuarioBarra.getNombre() %></span>
             </span>
             <a href="<%= ctx %>/logout">Salir</a>

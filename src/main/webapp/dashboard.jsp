@@ -42,9 +42,13 @@
 <main class="contenedor">
 
     <div class="panel-cabecera">
-        <div>
-            <h1>Hola, <%= usuario.getNombre() %></h1>
-            <div class="correo"><%= usuario.getEmail() %></div>
+        <div class="panel-perfil">
+            <img src="img/perfil.jpg" alt="Foto de perfil" class="foto-perfil-panel">
+            <div>
+                <h1>Hola, <%= usuario.getNombre() %></h1>
+                <div class="correo"><%= usuario.getEmail() %></div>
+                <div class="presentacion-corta">Estudiante de Ingeniería de Sistemas y Computación — III Ciclo</div>
+            </div>
         </div>
         <div class="dato">
             <span class="cifra"><%= misArchivos.size() %></span>
@@ -102,14 +106,17 @@
                     <label for="titulo">Título de la tarea</label>
                     <input type="text" id="titulo" name="titulo"
                            placeholder="Ej. Ejercicios de arreglos">
-                    <p class="ayuda">Si lo dejas vacío usamos el nombre del archivo.</p>
+                    <p class="ayuda">Si lo dejas vacío usamos el nombre de cada archivo.
+                        Si subes varios, este título se usa como prefijo común.</p>
                 </div>
             </div>
 
             <div class="campo" style="margin-top:16px">
-                <label for="archivo">Archivo</label>
-                <input type="file" id="archivo" name="archivo" required>
-                <p class="ayuda">Hasta 25 MB. PDF, Word, imágenes, código comprimido, etc.</p>
+                <label for="archivo">Archivo(s)</label>
+                <input type="file" id="archivo" name="archivo" multiple required>
+                <p class="ayuda">Hasta 25 MB por archivo. Puedes seleccionar varios a la vez
+                    (imágenes, código .java, PDF, Word, comprimidos, etc.) — todos se
+                    guardan en la misma unidad y semana que elijas arriba.</p>
             </div>
 
             <button type="submit" class="btn">Subir tarea</button>

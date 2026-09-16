@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 @WebServlet("/subir")
-@MultipartConfig(maxFileSize = 25 * 1024 * 1024, maxRequestSize = 30 * 1024 * 1024) // 25 MB por archivo
+@MultipartConfig(maxFileSize = 25 * 1024 * 1024, maxRequestSize = 150 * 1024 * 1024) // 25 MB por archivo, hasta ~6 archivos por vez
 public class SubirArchivoServlet extends HttpServlet {
 
     private final StorageService storageService = new StorageService();
@@ -60,42 +63,86 @@ public class SubirArchivoServlet extends HttpServlet {
             return;
         }
 
-        Part parte = req.getPart("archivo");
-        if (parte == null || parte.getSize() == 0) {
-            redirigirConMensaje(req, resp, "error", "Elige un archivo para subir.");
+        Collection<Part> todasLasPartes;
+        try {
+            todasLasPartes = req.getParts();
+        } catch (Exception e) {
+            redirigirConMensaje(req, resp, "error", "No se pudo leer la solicitud: " + e.getMessage());
             return;
         }
 
-        String nombreOriginal = obtenerNombreArchivo(parte);
-        String tipoMime = parte.getContentType();
-
-        try (InputStream is = parte.getInputStream()) {
-            byte[] datos = is.readAllBytes();
-
-            // Carpeta en Storage: curso/unidad-N/semana-N/archivo.ext
-            String carpeta = curso + "/unidad-" + unidad + "/semana-" + semana;
-            String nombreAlmacenado = storageService.subirArchivo(datos, nombreOriginal, tipoMime, carpeta);
-
-            Archivo archivo = new Archivo();
-            archivo.setUsuarioId(usuario.getId());
-            archivo.setTitulo(titulo != null && !titulo.isBlank() ? titulo.trim() : nombreOriginal);
-            archivo.setNombreOriginal(nombreOriginal);
-            archivo.setNombreAlmacenado(nombreAlmacenado);
-            archivo.setCurso(curso);
-            archivo.setUnidad(unidad);
-            archivo.setSemana(semana);
-            archivo.setUrl(storageService.obtenerUrlPublica(nombreAlmacenado));
-            archivo.setTipoMime(tipoMime);
-            archivo.setTamano(datos.length);
-
-            archivoDAO.guardar(archivo);
-
-            redirigirConMensaje(req, resp, "exito",
-                    "Se subió \"" + nombreOriginal + "\" a la Unidad " + unidad + ", Semana " + semana + ".");
-
-        } catch (Exception e) {
-            redirigirConMensaje(req, resp, "error", "No se pudo subir el archivo: " + e.getMessage());
+        List<Part> partesArchivo = new ArrayList<>();
+        for (Part p : todasLasPartes) {
+            if ("archivo".equals(p.getName()) && p.getSize() > 0) {
+                partesArchivo.add(p);
+            }
         }
+
+        if (partesArchivo.isEmpty()) {
+            redirigirConMensaje(req, resp, "error", "Elige al menos un archivo para subir.");
+            return;
+        }
+
+        int subidos = 0;
+        List<String> fallidos = new ArrayList<>();
+        String ultimoNombre = null;
+
+        for (Part parte : partesArchivo) {
+            String nombreOriginal = obtenerNombreArchivo(parte);
+            String tipoMime = parte.getContentType();
+
+            try (InputStream is = parte.getInputStream()) {
+                byte[] datos = is.readAllBytes();
+
+                // Carpeta en Storage: curso/unidad-N/semana-N/archivo.ext
+                String carpeta = curso + "/unidad-" + unidad + "/semana-" + semana;
+                String nombreAlmacenado = storageService.subirArchivo(datos, nombreOriginal, tipoMime, carpeta);
+
+                String tituloFinal;
+                if (titulo != null && !titulo.isBlank()) {
+                    tituloFinal = partesArchivo.size() > 1
+                            ? titulo.trim() + " – " + nombreOriginal
+                            : titulo.trim();
+                } else {
+                    tituloFinal = nombreOriginal;
+                }
+
+                Archivo archivo = new Archivo();
+                archivo.setUsuarioId(usuario.getId());
+                archivo.setTitulo(tituloFinal);
+                archivo.setNombreOriginal(nombreOriginal);
+                archivo.setNombreAlmacenado(nombreAlmacenado);
+                archivo.setCurso(curso);
+                archivo.setUnidad(unidad);
+                archivo.setSemana(semana);
+                archivo.setUrl(storageService.obtenerUrlPublica(nombreAlmacenado));
+                archivo.setTipoMime(tipoMime);
+                archivo.setTamano(datos.length);
+
+                archivoDAO.guardar(archivo);
+                subidos++;
+                ultimoNombre = nombreOriginal;
+
+            } catch (Exception e) {
+                fallidos.add(nombreOriginal);
+            }
+        }
+
+        if (subidos == 0) {
+            redirigirConMensaje(req, resp, "error", "No se pudo subir ningún archivo: " + fallidos);
+            return;
+        }
+
+        String mensaje;
+        if (subidos == 1 && fallidos.isEmpty()) {
+            mensaje = "Se subió \"" + ultimoNombre + "\" a la Unidad " + unidad + ", Semana " + semana + ".";
+        } else {
+            mensaje = "Se subieron " + subidos + " archivo(s) a la Unidad " + unidad + ", Semana " + semana + ".";
+            if (!fallidos.isEmpty()) {
+                mensaje += " No se pudieron subir: " + String.join(", ", fallidos) + ".";
+            }
+        }
+        redirigirConMensaje(req, resp, fallidos.isEmpty() ? "exito" : "error", mensaje);
     }
 
     private void redirigirConMensaje(HttpServletRequest req, HttpServletResponse resp,

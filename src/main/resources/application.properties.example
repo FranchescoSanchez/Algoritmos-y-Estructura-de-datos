@@ -14,14 +14,14 @@
 db.host=aws-0-us-east-1.pooler.supabase.com
 db.port=5432
 db.name=postgres
-db.user=postgres.xtxmcssydzaiotoqjnep
-db.password=Franchez0203_
+db.user=postgres.xxxxxxxxxxxxxxxxxxxx
+db.password=CAMBIA_ESTA_CLAVE
 
 # ============================================
 #  Configuracion de Supabase Storage
 #  Variables de entorno equivalentes: SUPABASE_URL,
 #  SUPABASE_KEY, SUPABASE_BUCKET
 # ============================================
-supabase.url=https://xtxmcssydzaiotoqjnep.supabase.co
-supabase.key=sb_secret_e7gHSxDEsEIFSnOu4kkWUw_mEzF1MIi
+supabase.url=https://xxxxxxxxxxxxxxxx.supabase.co
+supabase.key=CAMBIA_ESTA_SERVICE_ROLE_KEY
 supabase.bucket=portafolio-archivos

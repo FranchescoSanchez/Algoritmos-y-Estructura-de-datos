@@ -9,3 +9,7 @@ target/
 .env
 *.log
 .mvn/
+
+# Contiene tu contraseña real de Supabase: nunca subir a git.
+# Usa application.properties.example como plantilla.
+src/main/resources/application.properties

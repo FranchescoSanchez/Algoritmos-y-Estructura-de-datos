@@ -29,6 +29,10 @@
                 <strong>Algoritmo y Estructura de Datos</strong>, unidad por unidad y semana
                 por semana, en el mismo orden en que las vimos en clase.
             </p>
+            <p class="portada-presentacion">
+                Estudiante de <strong>Ingeniería de Sistemas y Computación</strong> — III Ciclo,
+                Universidad Peruana Los Andes.
+            </p>
             <div class="portada-datos">
                 <div class="dato">
                     <span class="cifra">2</span>

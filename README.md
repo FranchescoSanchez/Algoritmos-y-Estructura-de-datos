@@ -50,11 +50,18 @@ local sin problemas.
    **service_role key**.
 4. En **Storage**, crea un bucket llamado `portafolio-archivos` y márcalo
    como público.
-5. Llena esos valores en `src/main/resources/application.properties`
-   (o como variables de entorno: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`,
-   `DB_PASSWORD`, `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`, que
-   tienen prioridad y son más seguras).
+5. Copia `src/main/resources/application.properties.example` a
+   `src/main/resources/application.properties` (ese archivo ya tiene tus
+   credenciales reales si seguiste esta guía con ayuda, y está excluido de
+   git en `.gitignore` para que nunca se suba por accidente a GitHub).
 6. Vuelve a compilar y abre `/estado`: debe decir **Modo: Supabase (nube)**.
+
+**Si vas a desplegar en Render, Railway u otro hosting:** no subas
+`application.properties` con tu contraseña real. En su lugar, define estas
+variables de entorno directamente en el panel del hosting (sección
+"Environment"): `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`,
+`SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`. Tienen prioridad sobre
+el archivo, así que ni siquiera necesitas subirlo.
 
 Ten en cuenta que los datos de la base local **no se copian solos** a
 Supabase: al cambiar de modo empiezas con un portafolio vacío.
