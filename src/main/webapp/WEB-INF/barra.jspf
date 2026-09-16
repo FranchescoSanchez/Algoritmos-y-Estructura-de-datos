@@ -1,0 +1,36 @@
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
+<%--
+    Cabecera comun: logo UPLA a la izquierda y, si hay sesion iniciada,
+    el nombre del usuario a la derecha.
+--%>
+<%@ page import="com.miportafolio.model.Usuario" %>
+<%
+    Usuario usuarioBarra = (session != null) ? (Usuario) session.getAttribute("usuario") : null;
+    String ctx = request.getContextPath();
+    String inicialBarra = (usuarioBarra != null && !usuarioBarra.getNombre().isBlank())
+            ? usuarioBarra.getNombre().trim().substring(0, 1).toUpperCase() : "";
+%>
+<header class="barra">
+    <a class="marca" href="<%= ctx %>/index.jsp">
+        <img src="<%= ctx %>/img/upla-logo.png" alt="Universidad Peruana Los Andes">
+        <span class="marca-texto">
+            <span class="marca-titulo">Mi Portafolio</span>
+            <span class="marca-sub">Universidad Peruana Los Andes</span>
+        </span>
+    </a>
+
+    <nav>
+        <a href="<%= ctx %>/index.jsp">Portafolio</a>
+        <% if (usuarioBarra != null) { %>
+            <a href="<%= ctx %>/dashboard.jsp">Subir tareas</a>
+            <span class="chip-usuario">
+                <span class="avatar"><%= inicialBarra %></span>
+                <span class="nombre"><%= usuarioBarra.getNombre() %></span>
+            </span>
+            <a href="<%= ctx %>/logout">Salir</a>
+        <% } else { %>
+            <a href="<%= ctx %>/login.jsp">Iniciar sesión</a>
+            <a class="btn btn-mini" href="<%= ctx %>/registro.jsp">Crear cuenta</a>
+        <% } %>
+    </nav>
+</header>
