@@ -30,7 +30,7 @@
                 por semana, en el mismo orden en que las vimos en clase.
             </p>
             <p class="portada-presentacion">
-                Estudiante de <strong>Ingeniería de Sistemas y Computación</strong> — III Ciclo,
+                Estudiante de <strong>Ingeniería de Sistemas y Computación</strong> — IV Ciclo,
                 Universidad Peruana Los Andes.
             </p>
             <div class="portada-datos">
